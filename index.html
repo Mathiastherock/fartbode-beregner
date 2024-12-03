@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fartbøde Beregner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fartbøde Beregner</h1>
+    <form id="speedForm">
+        <label for="speed">Hastighed (km/t):</label>
+        <input type="number" id="speed" required>
+
+        <label for="vehicle">Køretøjstype:</label>
+        <select id="vehicle" required>
+            <option value="car">Bil</option>
+            <option value="mc">Motorcykel</option>
+            <option value="truck">Lastbil</option>
+        </select>
+
+        <label for="zone">Zone:</label>
+        <select id="zone" required>
+            <option value="city">Byzone (50 km/t)</option>
+            <option value="highway">Motorvej (130 km/t)</option>
+            <option value="country">Landevej (80 km/t)</option>
+        </select>
+
+        <button type="button" onclick="calculateFine()">Beregn</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function calculateFine() {
+            const speed = parseInt(document.getElementById("speed").value);
+            const vehicle = document.getElementById("vehicle").value;
+            const zone = document.getElementById("zone").value;
+
+            let speedLimit = 0;
+
+            // Definer fartgrænser baseret på zone
+            if (zone === "city") speedLimit = 50;
+            if (zone === "highway") speedLimit = 130;
+            if (zone === "country") speedLimit = 80;
+
+            const overSpeed = speed - speedLimit;
+            if (overSpeed <= 0) {
+                document.getElementById("result").innerHTML = "Du kørte ikke for hurtigt. Ingen bøde!";
+                return;
+            }
+
+            // Beregn bøden
+            const baseFine = 1000;
+            const extraFine = Math.ceil(overSpeed / 10) * 500;
+            const totalFine = baseFine + extraFine;
+
+            // Beregn konsekvenser
+            let consequence = "Klip i kørekortet";
+            if (overSpeed > speedLimit) consequence = "Betinget frakendelse af kørekortet";
+            if (overSpeed > speedLimit * 2) consequence = "Ubetinget frakendelse af kørekortet";
+
+            // Resultat
+            document.getElementById("result").innerHTML = `
+                <p>Fartgrænse: ${speedLimit} km/t</p>
+                <p>Din hastighed: ${speed} km/t</p>
+                <p>Overskridelse: ${overSpeed} km/t</p>
+                <p>Bøde: ${totalFine} kr.</p>
+                <p>Konsekvens: ${consequence}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
